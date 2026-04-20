@@ -12,7 +12,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   const resolvedParams = use(params);
   const [quantity, setQuantity] = useState(0);
   const [product, setProduct] = useState<any>(null);
-  const { cart, addToCart, removeOneFromCart, updateQuantity } = useCart();
+  const { cart, addToCart, removeFromCart, updateQuantity } = useCart();
   const { formatPrice } = useCurrency();
 
   useEffect(() => {
