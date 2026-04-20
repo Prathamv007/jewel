@@ -1,0 +1,59 @@
+@import "tailwindcss";
+
+:root {
+  --background: #fbf9f4;
+  --foreground: #1b1c19;
+  --accent: #D4AF37;
+  --accent-gold-light: #e5d3b3;
+  --radius: 0px;
+}
+
+@theme inline {
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-accent: var(--accent);
+  --color-accent-gold-light: var(--accent-gold-light);
+  --font-serif: var(--font-playfair);
+  --font-sans: var(--font-inter);
+  --radius-sm: var(--radius);
+  --radius-md: var(--radius);
+  --radius-lg: var(--radius);
+  --radius-xl: var(--radius);
+}
+
+@layer base {
+  * {
+    border-color: rgba(27, 28, 25, 0.15); /* Subdued borders for high-end look */
+  }
+}
+
+body {
+  background: var(--background);
+  color: var(--foreground);
+  font-family: var(--font-inter), sans-serif;
+  text-rendering: optimizeLegibility;
+  -webkit-font-smoothing: antialiased;
+}
+
+h1, h2, h3, h4, h5, h6 {
+  font-family: var(--font-playfair), serif;
+  letter-spacing: -0.02em;
+}
+
+/* Luxury Spacing Rules */
+.section-spacing {
+  @apply py-20 lg:py-32;
+}
+
+/* Buttons with sharp edges and premium typography */
+.btn-primary {
+  @apply bg-[#1b1c19] text-white px-10 py-4 uppercase tracking-[0.1em] text-xs font-semibold hover:opacity-90 transition-all;
+}
+
+.btn-secondary {
+  @apply bg-[#D4AF37] text-white px-10 py-4 uppercase tracking-[0.1em] text-xs font-semibold hover:opacity-90 transition-all;
+}
+
+.btn-outline {
+  @apply border border-[#1b1c19] text-[#1b1c19] px-10 py-4 uppercase tracking-[0.1em] text-xs font-semibold hover:bg-[#1b1c19] hover:text-white transition-all;
+}
