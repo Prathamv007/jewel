@@ -3,7 +3,7 @@ import Razorpay from "razorpay";
 import { getAuthUser } from "@/lib/auth";
 
 const razorpay = new Razorpay({
-  keyid: process.env.RAZORPAY_KEY_ID || "rzp_test_placeholder",
+  key_id: process.env.RAZORPAY_KEY_ID || "rzp_test_placeholder",
   key_secret: process.env.RAZORPAY_KEY_SECRET || "rzp_secret_placeholder",
 });
 
