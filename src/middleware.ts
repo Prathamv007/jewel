@@ -18,6 +18,12 @@ export async function middleware(request: NextRequest) {
         // If login page is visited with a direct intent (no callback), go to dashboard
         // If there is a search param for redirect, respect it (though usuallyhandled by login logic)
         if (payload.role === "admin") {
+          // If they were trying to go to account, let them go there.
+          // Otherwise, admin dashboard is the default for admins.
+          const callback = request.nextUrl.searchParams.get("callback");
+          if (callback && callback.startsWith("/account")) {
+             return NextResponse.redirect(new URL(callback, request.url));
+          }
           return NextResponse.redirect(new URL("/admin", request.url));
         }
         return NextResponse.redirect(new URL("/account", request.url));

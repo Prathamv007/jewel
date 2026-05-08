@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import Razorpay from "razorpay";
-import connectToDatabase from "@/lib/mongodb";
-import { Order } from "@/models/Order";
-import { Product } from "@/models/Product";
+import prisma from "@/lib/prisma";
 
 export async function POST(req: Request) {
   const body = await req.json();
@@ -19,20 +17,23 @@ export async function POST(req: Request) {
     const orderId = body.payload.order.entity.notes.orderId;
     const paymentId = body.payload.payment.entity.id;
 
-    await connectToDatabase();
-    
     // 1. Update Order Status
-    const order = await Order.findByIdAndUpdate(orderId, {
-      paymentStatus: "completed",
-      paymentId: paymentId,
-      orderStatus: "placed",
-    }, { new: true });
+    const order = await prisma.order.update({
+      where: { id: orderId },
+      data: {
+        paymentStatus: "completed",
+        paymentId: paymentId,
+        orderStatus: "placed",
+      },
+      include: { items: true }
+    });
 
     // 2. Decrease Product Stock
     if (order && order.items) {
       for (const item of order.items) {
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: { stock: -item.quantity }
+        await prisma.product.update({
+          where: { id: item.productId },
+          data: { stock: { decrement: item.quantity } }
         });
       }
     }

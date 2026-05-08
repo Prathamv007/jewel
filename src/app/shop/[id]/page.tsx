@@ -23,7 +23,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
         if (data.product) {
           setProduct(data.product);
           // Check if item is already in cart to set initial quantity
-          const cartItem = cart.find(i => i._id === resolvedParams.id);
+          const cartItem = cart.find(i => i.id === resolvedParams.id);
           if (cartItem) setQuantity(cartItem.quantity);
         } else {
           console.error("Product not found");
@@ -38,7 +38,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
   // Sync quantity if cart changes externally
   useEffect(() => {
     if (product) {
-      const cartItem = cart.find(i => i._id === product._id);
+      const cartItem = cart.find(i => i.id === product.id);
       if (cartItem) {
         setQuantity(cartItem.quantity);
       } else if (quantity > 0 && !cartItem) {
@@ -55,7 +55,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     const qtyToAdd = quantity === 0 ? 1 : quantity;
     
     addToCart({
-      _id: product._id,
+      id: product.id,
       name: product.name,
       price: product.price,
       image: product.images?.[0] || "",
@@ -71,9 +71,9 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       const newQty = quantity + 1;
       setQuantity(newQty);
       // If already in cart, update cart too for seamless experience
-      const cartItem = cart.find(i => i._id === product._id);
+      const cartItem = cart.find(i => i.id === product.id);
       if (cartItem) {
-        updateQuantity(product._id, newQty);
+        updateQuantity(product.id, newQty);
       }
     }
   };
@@ -83,16 +83,16 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
       const newQty = quantity - 1;
       setQuantity(newQty);
       // If already in cart, update cart too
-      const cartItem = cart.find(i => i._id === product._id);
+      const cartItem = cart.find(i => i.id === product.id);
       if (cartItem) {
         if (newQty === 0) {
           // You might not want to auto-remove from cart just by clicking minus on product page,
           // but we'll follow the user's logic of showing count.
           // Let's keep it in cart but at qty 0? No, standard is removal or min 1.
           // The user specifically asked for "keep it 0 by default".
-          updateQuantity(product._id, 0); 
+          updateQuantity(product.id, 0); 
         } else {
-          updateQuantity(product._id, newQty);
+          updateQuantity(product.id, newQty);
         }
       }
     }
@@ -170,7 +170,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                  </li>
                  <li className="flex justify-between border-b border-foreground/5 py-2">
                     <span className="opacity-40">Atelier ID</span>
-                    <span>#{product._id.slice(0, 6)}</span>
+                    <span>#{product.id.slice(0, 6)}</span>
                  </li>
               </ul>
            </div>
@@ -219,7 +219,7 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     {product.stock > 0 ? (
                       <>
                         <ShoppingBag size={14} />
-                        {cart.some(i => i._id === product._id) ? "Update Atelier Bag" : "Add to Atelier Bag"}
+                        {cart.some(i => i.id === product.id) ? "Update Atelier Bag" : "Add to Atelier Bag"}
                       </>
                     ) : (
                       "Sold Out"

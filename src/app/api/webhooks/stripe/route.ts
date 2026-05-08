@@ -1,8 +1,6 @@
 import { NextResponse } from "next/server";
 import Stripe from "stripe";
-import connectToDatabase from "@/lib/mongodb";
-import { Order } from "@/models/Order";
-import { Product } from "@/models/Product";
+import prisma from "@/lib/prisma";
 import { headers } from "next/headers";
 
 const stripe = new Stripe(process.env.STRIPE_SECRET_KEY || "sk_test_placeholder", {
@@ -32,21 +30,26 @@ export async function POST(req: Request) {
     const orderId = session.metadata?.orderId;
     const paymentId = session.payment_intent as string;
 
-    await connectToDatabase();
-    
-    // 1. Update Order Status
-    const order = await Order.findByIdAndUpdate(orderId, {
-      paymentStatus: "completed",
-      paymentId: paymentId,
-      orderStatus: "placed",
-    }, { new: true });
+    if (orderId) {
+      // 1. Update Order Status
+      const order = await prisma.order.update({
+        where: { id: orderId },
+        data: {
+          paymentStatus: "completed",
+          paymentId: paymentId,
+          orderStatus: "placed",
+        },
+        include: { items: true }
+      });
 
-    // 2. Decrease Product Stock
-    if (order && order.items) {
-      for (const item of order.items) {
-        await Product.findByIdAndUpdate(item.product, {
-          $inc: { stock: -item.quantity }
-        });
+      // 2. Decrease Product Stock
+      if (order && order.items) {
+        for (const item of order.items) {
+          await prisma.product.update({
+            where: { id: item.productId },
+            data: { stock: { decrement: item.quantity } }
+          });
+        }
       }
     }
   }

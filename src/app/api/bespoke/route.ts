@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/auth";
-import connectToDatabase from "@/lib/mongodb";
-import { BespokeDesign } from "@/models/BespokeDesign";
+import prisma from "@/lib/prisma";
 
 export async function GET(request: Request) {
   try {
@@ -10,18 +9,18 @@ export async function GET(request: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectToDatabase();
-    
-    // Admin Path: All requests
     if (user.role === "admin") {
-      const designs = await BespokeDesign.find({})
-        .populate("userId", "firstName lastName email")
-        .sort({ createdAt: -1 });
+      const designs = await prisma.bespokeDesign.findMany({
+        include: { user: { select: { firstName: true, lastName: true, email: true } } },
+        orderBy: { createdAt: 'desc' }
+      });
       return NextResponse.json(designs);
     }
 
-    // User Path: Own requests
-    const designs = await BespokeDesign.find({ userId: user.userId }).sort({ createdAt: -1 });
+    const designs = await prisma.bespokeDesign.findMany({
+      where: { userId: user.userId },
+      orderBy: { createdAt: 'desc' }
+    });
 
     return NextResponse.json(designs);
   } catch (error: any) {
@@ -42,16 +41,17 @@ export async function POST(request: Request) {
       return NextResponse.json({ error: "Missing required fields" }, { status: 400 });
     }
 
-    await connectToDatabase();
-    const newDesign = await BespokeDesign.create({
-      userId: user.userId,
-      designImage,
-      description,
-      material,
-      gemstones,
-      budget,
-      timeline,
-      status: "Pending Review",
+    const newDesign = await prisma.bespokeDesign.create({
+      data: {
+        userId: user.userId,
+        designImage,
+        description,
+        material,
+        gemstones: gemstones || "None",
+        budget,
+        timeline: timeline || "Flexible",
+        status: "Pending Review",
+      }
     });
 
     return NextResponse.json(newDesign, { status: 201 });

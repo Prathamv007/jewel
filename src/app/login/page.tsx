@@ -36,7 +36,7 @@ function LoginForm() {
       } else if (data.user.role === "admin") {
         window.location.href = "/admin";
       } else {
-        window.location.href = "/";
+        window.location.href = "/account";
       }
     } catch (err: any) {
       setError(err.message);

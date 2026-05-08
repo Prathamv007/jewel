@@ -1,15 +1,12 @@
 import { NextResponse } from "next/server";
-import connectToDatabase from "@/lib/mongodb";
-import { Product } from "@/models/Product";
-import { User } from "@/models/User";
+import prisma from "@/lib/prisma";
 import { isAdminUser } from "@/lib/auth";
 
 // Public: Get specific jewelry detail
 export async function GET(req: Request, context: { params: Promise<{ id: string }> }) {
   try {
     const params = await context.params;
-    await connectToDatabase();
-    const product = await Product.findById(params.id);
+    const product = await prisma.product.findUnique({ where: { id: params.id } });
     if (!product) {
       return NextResponse.json({ error: "Jewelry piece not found" }, { status: 404 });
     }
@@ -28,13 +25,11 @@ export async function PUT(req: Request, context: { params: Promise<{ id: string 
       return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
-    await connectToDatabase();
     const body = await req.json();
-    const product = await Product.findByIdAndUpdate(params.id, body, { new: true });
-
-    if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
+    const product = await prisma.product.update({
+      where: { id: params.id },
+      data: body
+    });
 
     return NextResponse.json({ message: "Product updated successfully", product });
   } catch (error) {
@@ -51,12 +46,9 @@ export async function DELETE(req: Request, context: { params: Promise<{ id: stri
       return NextResponse.json({ error: "Forbidden: Admin access required" }, { status: 403 });
     }
 
-    await connectToDatabase();
-    const product = await Product.findByIdAndDelete(params.id);
-
-    if (!product) {
-      return NextResponse.json({ error: "Product not found" }, { status: 404 });
-    }
+    const product = await prisma.product.delete({
+      where: { id: params.id }
+    });
 
     return NextResponse.json({ message: "Product deleted successfully" });
   } catch (error) {

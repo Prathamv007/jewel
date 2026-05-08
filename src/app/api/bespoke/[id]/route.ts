@@ -1,7 +1,6 @@
 import { NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/auth";
-import connectToDatabase from "@/lib/mongodb";
-import { BespokeDesign } from "@/models/BespokeDesign";
+import prisma from "@/lib/prisma";
 
 export async function PATCH(
   request: Request,
@@ -17,23 +16,16 @@ export async function PATCH(
     const body = await request.json();
     const { status, budget, material, adminNotes } = body;
 
-    await connectToDatabase();
-    
     const updateData: any = {};
     if (status) updateData.status = status;
     if (budget) updateData.budget = budget;
     if (material) updateData.material = material;
     if (adminNotes !== undefined) updateData.adminNotes = adminNotes;
 
-    const updatedDesign = await BespokeDesign.findByIdAndUpdate(
-      id,
-      updateData,
-      { new: true, runValidators: true }
-    );
-
-    if (!updatedDesign) {
-      return NextResponse.json({ error: "Design not found" }, { status: 404 });
-    }
+    const updatedDesign = await prisma.bespokeDesign.update({
+      where: { id },
+      data: updateData
+    });
 
     return NextResponse.json(updatedDesign);
   } catch (error: any) {
@@ -53,15 +45,16 @@ export async function GET(
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectToDatabase();
-    const design = await BespokeDesign.findById(id).populate("userId", "firstName lastName email");
+    const design = await prisma.bespokeDesign.findUnique({
+      where: { id },
+      include: { user: { select: { firstName: true, lastName: true, email: true } } }
+    });
 
     if (!design) {
       return NextResponse.json({ error: "Design not found" }, { status: 404 });
     }
 
-    // Authorization check: Only admin or the owner can see it
-    if (user.role !== "admin" && design.userId.toString() !== user.userId) {
+    if (user.role !== "admin" && design.userId !== user.userId) {
       return NextResponse.json({ error: "Forbidden" }, { status: 403 });
     }
 

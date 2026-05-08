@@ -1,9 +1,7 @@
 import { NextResponse } from "next/server";
 import { getAuthUser } from "@/lib/auth";
-import connectToDatabase from "@/lib/mongodb";
-import { Order } from "@/models/Order";
+import prisma from "@/lib/prisma";
 
-// Get user orders: High-end fulfillment tracking
 export async function GET() {
   try {
     const payload = await getAuthUser();
@@ -11,21 +9,19 @@ export async function GET() {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectToDatabase();
-    
-    // Admin path: can see all orders
     if (payload.role === "admin") {
-      const orders = await Order.find({})
-        .populate("userId", "firstName lastName email")
-        .populate("items.product")
-        .sort({ createdAt: -1 });
+      const orders = await prisma.order.findMany({
+        include: { user: { select: { firstName: true, lastName: true, email: true } }, items: { include: { product: true } } },
+        orderBy: { createdAt: 'desc' }
+      });
       return NextResponse.json({ orders });
     }
 
-    // User path: only see own orders
-    const orders = await Order.find({ userId: payload.userId })
-      .populate("items.product")
-      .sort({ createdAt: -1 });
+    const orders = await prisma.order.findMany({
+      where: { userId: payload.userId },
+      include: { items: { include: { product: true } } },
+      orderBy: { createdAt: 'desc' }
+    });
 
     return NextResponse.json({ orders });
   } catch (error) {
@@ -33,7 +29,6 @@ export async function GET() {
   }
 }
 
-// Create order: Initializing checkout flow
 export async function POST(req: Request) {
   try {
     const payload = await getAuthUser();
@@ -41,21 +36,32 @@ export async function POST(req: Request) {
       return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
     }
 
-    await connectToDatabase();
     const body = await req.json();
     const { items, totalAmount, currency, shippingAddress, paymentGateway } = body;
 
-    const order = await Order.create({
-      userId: payload.userId,
-      items,
-      totalAmount,
-      currency,
-      shippingAddress,
-      paymentGateway,
-      paymentStatus: "pending",
+    const order = await prisma.order.create({
+      data: {
+        userId: payload.userId,
+        totalAmount,
+        currency,
+        shippingLine1: shippingAddress?.line1,
+        shippingCity: shippingAddress?.city,
+        shippingState: shippingAddress?.state,
+        shippingPostalCode: shippingAddress?.postalCode,
+        shippingCountry: shippingAddress?.country,
+        paymentGateway,
+        paymentStatus: "pending",
+        items: {
+          create: items.map((item: any) => ({
+            productId: item.productId,
+            quantity: item.quantity,
+            priceAtPurchase: item.price
+          }))
+        }
+      }
     });
 
-    return NextResponse.json({ message: "Order initialized", orderId: order._id });
+    return NextResponse.json({ message: "Order initialized", orderId: order.id });
   } catch (error) {
     return NextResponse.json({ error: "Order initialization failed" }, { status: 500 });
   }

@@ -3,7 +3,7 @@
 import React, { createContext, useContext, useState, useEffect } from "react";
 
 export interface CartItem {
-  _id: string;
+  id: string;
   name: string;
   price: number;
   image: string;
@@ -39,7 +39,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
 
   const addToCart = (item: CartItem) => {
     setCart((prev) => {
-      const exists = prev.find((i) => i._id === item._id);
+      const exists = prev.find((i) => i.id === item.id);
       if (exists) {
         const newQty = exists.quantity + item.quantity;
         if (newQty > item.stock) {
@@ -48,7 +48,7 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
           return prev;
         }
         return prev.map((i) =>
-          i._id === item._id ? { ...i, quantity: newQty } : i
+          i.id === item.id ? { ...i, quantity: newQty } : i
         );
       }
       return [...prev, item];
@@ -59,13 +59,13 @@ export function CartProvider({ children }: { children: React.ReactNode }) {
   };
 
   const removeFromCart = (id: string) => {
-    setCart((prev) => prev.filter((i) => i._id !== id));
+    setCart((prev) => prev.filter((i) => i.id !== id));
   };
 
   const updateQuantity = (id: string, q: number) => {
     setCart((prev) =>
       prev.map((i) => {
-        if (i._id === id) {
+        if (i.id === id) {
           if (q > i.stock) {
             setNotification(`Maximum Atelier stock reached for this piece.`);
             setTimeout(() => setNotification(null), 3000);

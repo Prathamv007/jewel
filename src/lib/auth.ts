@@ -1,16 +1,14 @@
 import { jwtVerify, SignJWT } from "jose";
 import { cookies } from "next/headers";
-import connectToDatabase from "./mongodb";
-import { User } from "@/models/User";
+import prisma from "./prisma";
 
-const JWT_SECRET = process.env.JWT_SECRET;
+const JWT_SECRET = process.env.JWT_SECRET || "dev_secret_jewelry_vedika";
 
-if (!JWT_SECRET && process.env.NODE_ENV === "production") {
-  throw new Error("CRITICAL: JWT_SECRET environment variable is missing in production.");
+if (!JWT_SECRET) {
+  throw new Error("CRITICAL: JWT_SECRET environment variable is missing.");
 }
 
-const finalSecret = JWT_SECRET || "dev_secret_jewelry_vedika";
-const secret = new TextEncoder().encode(finalSecret);
+const secret = new TextEncoder().encode(JWT_SECRET);
 
 export interface CustomJwtPayload {
   userId: string;
@@ -74,8 +72,10 @@ export async function isAdminUser(): Promise<boolean> {
 
   // Authoritative path: JWT might be stale, check DB
   try {
-    await connectToDatabase();
-    const user = await User.findById(payload.userId).select("role");
+    const user = await prisma.user.findUnique({
+      where: { id: payload.userId },
+      select: { role: true }
+    });
     return user?.role === "admin";
   } catch (err) {
     console.error("Admin check failed:", err);

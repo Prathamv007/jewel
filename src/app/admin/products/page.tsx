@@ -26,7 +26,7 @@ export default function AdminProductsPage() {
   };
 
   const startEditing = (p: any) => {
-    setEditingId(p._id);
+    setEditingId(p.id);
     setEditPrice(p.price);
   };
 
@@ -42,7 +42,7 @@ export default function AdminProductsPage() {
         body: JSON.stringify({ price: editPrice }),
       });
       if (res.ok) {
-        setProducts(products.map(p => p._id === id ? { ...p, price: editPrice } : p));
+        setProducts(products.map(p => p.id === id ? { ...p, price: editPrice } : p));
         setEditingId(null);
       } else {
         const d = await res.json();
@@ -62,7 +62,7 @@ export default function AdminProductsPage() {
     try {
       const res = await fetch(`/api/products/${id}`, { method: "DELETE" });
       if (res.ok) {
-        setProducts(prev => prev.filter(p => p._id !== id));
+        setProducts(prev => prev.filter(p => p.id !== id));
       } else {
         const d = await res.json();
         alert(`Delete failed: ${d.error || res.status}. Make sure you are logged in as Admin.`);
@@ -100,7 +100,7 @@ export default function AdminProductsPage() {
           </thead>
           <tbody className="divide-y divide-foreground/5">
             {products.map((p) => (
-              <tr key={p._id} className="hover:bg-accent/5 transition-colors group">
+              <tr key={p.id} className="hover:bg-accent/5 transition-colors group">
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-4">
                     <div className="w-14 h-14 bg-[#fbf9f4] overflow-hidden border border-transparent group-hover:border-accent/20 shrink-0">
@@ -112,13 +112,13 @@ export default function AdminProductsPage() {
                     </div>
                     <div>
                       <p className="text-xs uppercase tracking-widest font-bold">{p.name}</p>
-                      <p className="text-[8px] opacity-40 uppercase tracking-widest font-medium mt-0.5">#{p._id.slice(-8)}</p>
+                      <p className="text-[8px] opacity-40 uppercase tracking-widest font-medium mt-0.5">#{p.id.slice(-8)}</p>
                     </div>
                   </div>
                 </td>
                 <td className="px-8 py-6 text-xs font-serif italic text-accent">{p.category}</td>
                 <td className="px-8 py-6">
-                  {editingId === p._id ? (
+                  {editingId === p.id ? (
                     <div className="flex items-center gap-2">
                       <span className="text-xs tracking-widest font-bold">₹</span>
                       <input
@@ -141,9 +141,9 @@ export default function AdminProductsPage() {
                 </td>
                 <td className="px-8 py-6">
                   <div className="flex items-center gap-3 text-foreground/30 group-hover:text-foreground/60 transition-colors">
-                    {editingId === p._id ? (
+                    {editingId === p.id ? (
                       <>
-                        <button onClick={() => savePrice(p._id)} disabled={isUpdating} className="hover:text-green-600 transition-colors p-1" title="Save">
+                        <button onClick={() => savePrice(p.id)} disabled={isUpdating} className="hover:text-green-600 transition-colors p-1" title="Save">
                           <Check size={16} />
                         </button>
                         <button onClick={cancelEditing} className="hover:text-red-500 transition-colors p-1" title="Cancel">
@@ -152,18 +152,18 @@ export default function AdminProductsPage() {
                       </>
                     ) : (
                       <>
-                        <Link href={`/admin/products/${p._id}/edit`} className="hover:text-accent transition-colors p-1" title="Edit product">
+                        <Link href={`/admin/products/${p.id}/edit`} className="hover:text-accent transition-colors p-1" title="Edit product">
                           <Pencil size={15} />
                         </Link>
                         <button
-                          onClick={() => deleteProduct(p._id, p.name)}
-                          disabled={deletingId === p._id}
+                          onClick={() => deleteProduct(p.id, p.name)}
+                          disabled={deletingId === p.id}
                           className="hover:text-red-500 transition-colors p-1 disabled:opacity-50"
                           title="Remove Creation"
                         >
                           <Trash2 size={15} />
                         </button>
-                        <Link href={`/shop/${p._id}`} className="hover:text-accent transition-colors p-1" target="_blank" title="View in Shop">
+                        <Link href={`/shop/${p.id}`} className="hover:text-accent transition-colors p-1" target="_blank" title="View in Shop">
                           <ExternalLink size={15} />
                         </Link>
                       </>

@@ -9,7 +9,7 @@ import { ShoppingBag, Star } from "lucide-react";
 
 interface ProductCardProps {
   product: {
-    _id: string;
+    id: string;
     name: string;
     description: string;
     price: number;
@@ -26,13 +26,13 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
   const { formatPrice } = useCurrency();
   const { cart, addToCart, removeFromCart, updateQuantity } = useCart();
   
-  const cartItem = cart.find(item => item._id === product._id);
+  const cartItem = cart.find(item => item.id === product.id);
 
   const handleAddToCart = (e: React.MouseEvent) => {
     e.preventDefault();
     e.stopPropagation();
     addToCart({
-      _id: product._id,
+      id: product.id,
       name: product.name,
       price: product.price,
       image: product.images[0],
@@ -53,7 +53,7 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
       }}
       className="group relative"
     >
-      <Link href={`/shop/${product._id}`} className="block">
+      <Link href={`/shop/${product.id}`} className="block">
         {/* Architectural Image Container */}
         <div className="relative aspect-square overflow-hidden bg-[#fbf9f4] mb-6">
           <Image
@@ -115,16 +115,16 @@ export default function ProductCard({ product, index = 0 }: ProductCardProps) {
                 <button 
                   onClick={() => {
                     if (cartItem.quantity === 1) {
-                      removeFromCart(product._id);
+                      removeFromCart(product.id);
                     } else {
-                      updateQuantity(product._id, cartItem.quantity - 1);
+                      updateQuantity(product.id, cartItem.quantity - 1);
                     }
                   }}
                   className="px-4 py-2 hover:bg-foreground/5 transition-colors"
                 >-</button>
                 <span className="text-xs font-bold">{cartItem.quantity}</span>
                 <button 
-                  onClick={() => updateQuantity(product._id, cartItem.quantity + 1)}
+                  onClick={() => updateQuantity(product.id, cartItem.quantity + 1)}
                   disabled={cartItem.quantity >= product.stock}
                   className="px-4 py-2 hover:bg-foreground/5 transition-colors disabled:opacity-20 disabled:cursor-not-allowed"
                 >+</button>
