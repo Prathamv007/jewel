@@ -116,7 +116,7 @@ export default function AccountPage() {
                 ) : (
                   <div className="divide-y divide-foreground/5">
                     {bespokeHistory.map((design: any) => (
-                      <div key={design._id} className="p-6 flex items-center gap-6 hover:bg-[#fbf9f4]/50 transition-colors">
+                      <div key={design.id} className="p-6 flex items-center gap-6 hover:bg-[#fbf9f4]/50 transition-colors">
                         <div className="w-16 h-16 bg-[#fbf9f4] overflow-hidden shrink-0">
                           <img src={design.designImage} className="w-full h-full object-cover" />
                         </div>

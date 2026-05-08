@@ -157,7 +157,7 @@ export default function CheckoutPage() {
               
               <div className="space-y-6 max-h-[300px] overflow-y-auto no-scrollbar pr-4">
                  {cart.map((item) => (
-                    <div key={item._id} className="flex justify-between items-center gap-4">
+                    <div key={item.id} className="flex justify-between items-center gap-4">
                        <div className="flex items-center gap-4">
                           <div className="w-12 h-12 bg-white/5 p-1 relative">
                              <Image src={item.image} alt={item.name} fill className="object-contain" />

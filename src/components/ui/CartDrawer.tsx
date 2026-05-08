@@ -44,7 +44,7 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
                   </div>
                ) : (
                   cart.map((item) => (
-                     <div key={item._id} className="flex gap-6 group">
+                     <div key={item.id} className="flex gap-6 group">
                         <div className="w-24 h-24 bg-white/5 p-2 overflow-hidden relative shrink-0">
                            {item.image ? (
                              <img src={item.image} alt={item.name} className="w-full h-full object-contain" />
@@ -58,15 +58,15 @@ export default function CartDrawer({ isOpen, onClose }: { isOpen: boolean; onClo
                                  <p className="text-[10px] uppercase tracking-widest font-bold mb-1">{item.name}</p>
                                  <p className="text-xs font-serif italic text-accent">{formatPrice(item.price)}</p>
                               </div>
-                              <button onClick={() => removeFromCart(item._id)} className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-400">
+                              <button onClick={() => removeFromCart(item.id)} className="opacity-0 group-hover:opacity-100 transition-opacity hover:text-red-400">
                                  <Trash2 size={12} />
                               </button>
                            </div>
                            <div className="flex items-center gap-6 border border-white/10 w-fit px-3 py-2 text-[10px] font-bold">
-                              <button onClick={() => updateQuantity(item._id, item.quantity - 1)}><Minus size={10} /></button>
+                              <button onClick={() => updateQuantity(item.id, item.quantity - 1)}><Minus size={10} /></button>
                               <span>{item.quantity}</span>
                               <button 
-                                onClick={() => updateQuantity(item._id, item.quantity + 1)}
+                                onClick={() => updateQuantity(item.id, item.quantity + 1)}
                                 disabled={item.quantity >= item.stock}
                                 className="disabled:opacity-20"
                               >

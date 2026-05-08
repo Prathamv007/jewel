@@ -334,7 +334,7 @@ export default function BespokePage() {
                 ) : (
                   <div className="grid gap-6">
                     {history.map((design) => (
-                      <div key={design._id} className="bg-white border border-foreground/5 p-8 flex flex-col md:flex-row gap-8 group hover:shadow-2xl transition-all duration-500">
+                      <div key={design.id} className="bg-white border border-foreground/5 p-8 flex flex-col md:flex-row gap-8 group hover:shadow-2xl transition-all duration-500">
                         <div className="w-full md:w-48 aspect-square bg-[#fbf9f4] overflow-hidden shrink-0">
                           <img src={design.designImage} className="w-full h-full object-cover group-hover:scale-110 transition-transform duration-1000" />
                         </div>
@@ -365,7 +365,7 @@ export default function BespokePage() {
                             </div>
                             <div>
                               <p className="text-[8px] uppercase tracking-widest font-bold opacity-30 mb-1">Ref ID</p>
-                              <p className="text-[10px] font-bold opacity-40">{design._id.slice(-6).toUpperCase()}</p>
+                              <p className="text-[10px] font-bold opacity-40">{design.id.slice(-6).toUpperCase()}</p>
                             </div>
                           </div>
                         </div>

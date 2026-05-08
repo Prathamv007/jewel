@@ -13,9 +13,9 @@ import {
 } from "lucide-react";
 
 interface BespokeRequest {
-  _id: string;
+  id: string;
   userId: {
-    _id: string;
+    id: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -67,7 +67,7 @@ export default function AdminBespokePage() {
       });
       if (res.ok) {
         setRequests(requests.map(req => 
-          req._id === id ? { ...req, ...editForm } : req
+          req.id === id ? { ...req, ...editForm } : req
         ));
         setEditingId(null);
       } else {
@@ -177,7 +177,7 @@ export default function AdminBespokePage() {
                 </td>
               </tr>
             ) : filteredRequests.map((req) => (
-              <React.Fragment key={req._id}>
+              <React.Fragment key={req.id}>
                 <tr className="group hover:bg-foreground/[0.01] transition-colors">
                   <td className="px-6 py-6 font-serif">
                     <div className="flex items-center gap-4">
@@ -229,7 +229,7 @@ export default function AdminBespokePage() {
                     <div className="flex justify-end gap-2 opacity-0 group-hover:opacity-100 transition-opacity">
                       <button 
                         onClick={() => {
-                          setEditingId(req._id);
+                          setEditingId(req.id);
                           setEditForm({
                             budget: req.budget || "",
                             material: req.material || "",
@@ -244,7 +244,7 @@ export default function AdminBespokePage() {
                     </div>
                   </td>
                 </tr>
-                {editingId === req._id && (
+                {editingId === req.id && (
                   <tr className="bg-foreground/[0.03] border-b border-foreground/10">
                     <td colSpan={5} className="px-6 py-6">
                       <div className="grid grid-cols-4 gap-6 items-end">
@@ -293,7 +293,7 @@ export default function AdminBespokePage() {
                         <button onClick={() => setEditingId(null)} className="px-6 py-2 text-[10px] uppercase tracking-widest font-bold text-foreground/60 hover:text-foreground">
                           Cancel
                         </button>
-                        <button onClick={() => saveEdit(req._id)} className="px-6 py-2 text-[10px] uppercase tracking-widest font-bold bg-foreground text-white hover:bg-accent transition-colors">
+                        <button onClick={() => saveEdit(req.id)} className="px-6 py-2 text-[10px] uppercase tracking-widest font-bold bg-foreground text-white hover:bg-accent transition-colors">
                           Commit Revisions
                         </button>
                       </div>

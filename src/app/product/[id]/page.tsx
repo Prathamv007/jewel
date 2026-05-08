@@ -9,7 +9,7 @@ import { useCart } from "@/context/CartContext";
 import { motion } from "framer-motion";
 
 interface Product {
-  _id: string;
+  id: string;
   name: string;
   description: string;
   price: number;
@@ -62,11 +62,11 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
     );
   }
 
-  const cartItem = cart.find((item) => item._id === product._id);
+  const cartItem = cart.find((item) => item.id === product.id);
 
   const handleAddToCart = () => {
     addToCart({
-      _id: product._id,
+      id: product.id,
       name: product.name,
       price: product.price,
       image: product.images && product.images.length > 0 ? product.images[0] : "https://images.unsplash.com/photo-1515562141207-7a88fb7ce338?q=80&w=1000&auto=format&fit=crop",
@@ -153,16 +153,16 @@ export default function ProductDetailPage({ params }: { params: Promise<{ id: st
                     <button 
                       onClick={() => {
                         if (cartItem.quantity === 1) {
-                          removeFromCart(product._id);
+                          removeFromCart(product.id);
                         } else {
-                          updateQuantity(product._id, cartItem.quantity - 1);
+                          updateQuantity(product.id, cartItem.quantity - 1);
                         }
                       }}
                       className="px-6 py-3 hover:bg-foreground/5 transition-colors"
                     >-</button>
                     <span className="text-sm font-bold">{cartItem.quantity} In Bag</span>
                     <button 
-                      onClick={() => updateQuantity(product._id, cartItem.quantity + 1)}
+                      onClick={() => updateQuantity(product.id, cartItem.quantity + 1)}
                       className="px-6 py-3 hover:bg-foreground/5 transition-colors"
                     >+</button>
                   </div>

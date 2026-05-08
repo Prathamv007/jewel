@@ -84,8 +84,8 @@ export default function AdminOrdersPage() {
             </thead>
             <tbody className="divide-y divide-foreground/5">
               {filteredOrders.map((order) => (
-                <tr key={order._id} className="hover:bg-accent/5 transition-colors cursor-pointer group">
-                  <td className="px-8 py-6 text-[10px] uppercase tracking-tighter font-bold">#{order._id.slice(-6)}</td>
+                <tr key={order.id} className="hover:bg-accent/5 transition-colors cursor-pointer group">
+                  <td className="px-8 py-6 text-[10px] uppercase tracking-tighter font-bold">#{order.id.slice(-6)}</td>
                   <td className="px-8 py-6">
                      <div className="flex flex-col">
                         <span className="text-xs uppercase tracking-widest font-bold">
